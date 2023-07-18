@@ -5,6 +5,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "TB_TEST_SUITE")
 public class TestSuite {
