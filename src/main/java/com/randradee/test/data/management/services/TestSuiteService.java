@@ -6,7 +6,6 @@ import com.randradee.test.data.management.domain.testcase.TestCase;
 import com.randradee.test.data.management.domain.testcase.TestCaseRequestDTO;
 import com.randradee.test.data.management.repositories.TestCaseRepository;
 import com.randradee.test.data.management.repositories.TestSuiteRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,15 +36,4 @@ public class TestSuiteService {
         }
         return new TestSuiteWithCasesResponseDTO(suite.get().getId(), suite.get().getName(), cases);
     }
-
-    @Transactional
-    public void createTestCase(TestCaseRequestDTO requestData) throws Exception {
-        var suite = testSuiteRepository.findById(requestData.testSuiteId());
-        if (suite.isEmpty()){
-            throw new Exception();
-        }
-        var newTestCase = new TestCase(requestData, suite.get());
-        testCaseRepository.save(newTestCase);
-    }
-
 }

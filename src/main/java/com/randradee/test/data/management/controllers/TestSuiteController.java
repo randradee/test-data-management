@@ -4,6 +4,8 @@ import com.randradee.test.data.management.domain.suite.TestSuite;
 import com.randradee.test.data.management.domain.suite.TestSuiteResponseDTO;
 import com.randradee.test.data.management.domain.suite.TestSuiteWithCasesResponseDTO;
 import com.randradee.test.data.management.domain.testcase.TestCaseRequestDTO;
+import com.randradee.test.data.management.domain.testcase.TestCaseResponseDTO;
+import com.randradee.test.data.management.services.TestCaseService;
 import com.randradee.test.data.management.services.TestSuiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +20,40 @@ public class TestSuiteController {
     @Autowired
     TestSuiteService testSuiteService;
 
+    @Autowired
+    TestCaseService testCaseService;
+
     @GetMapping
     public ResponseEntity<List<TestSuiteResponseDTO>> getSuites(){
         return ResponseEntity.ok().body(this.testSuiteService.getSuites());
     }
 
-    @GetMapping(value = "/{id}/cases")
-    public ResponseEntity<TestSuiteWithCasesResponseDTO> getSuiteWithCases(@PathVariable("id") Long suiteId)
+    @GetMapping("/{suiteId}/cases")
+    public ResponseEntity<TestSuiteWithCasesResponseDTO> getSuiteWithCases(@PathVariable("suiteId") Long suiteId)
             throws Exception{
         return ResponseEntity.ok().body(testSuiteService.getSuiteByIdWithTestCases(suiteId));
     }
 
+    @GetMapping("/{suiteId}/cases/{testCaseId}")
+    public ResponseEntity<TestCaseResponseDTO> getTestCaseById(@PathVariable("suiteId") Long suiteId,
+                                                               @PathVariable("testCaseId") Long testCaseId
+                                                 ) throws Exception {
+        return ResponseEntity.ok().body(testCaseService.getTestCaseById(suiteId, testCaseId));
+    }
+
     @PostMapping()
     public ResponseEntity<String> createTestCase(@RequestBody TestCaseRequestDTO data) throws Exception {
-        testSuiteService.createTestCase(data);
+        testCaseService.createTestCase(data);
         return ResponseEntity.ok().body("caso de teste criado");
+    }
+
+
+
+    @DeleteMapping("/{suiteId}/cases/{testCaseId}")
+    public ResponseEntity<String> deleteTestCase(@PathVariable("suiteId") Long suiteId,
+                                                 @PathVariable("testCaseId") Long testCaseId
+                                                 ) throws Exception {
+        testCaseService.deleteTestCase(suiteId, testCaseId);
+        return ResponseEntity.ok().body("caso de teste apagado com sucesso");
     }
 }
