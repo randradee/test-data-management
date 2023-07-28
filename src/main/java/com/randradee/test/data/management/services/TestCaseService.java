@@ -47,4 +47,20 @@ public class TestCaseService {
         }
         testCaseRepository.deleteByIdAndSuiteId(suiteId, testCaseId);
     }
+
+    @Transactional
+    public void saveAttributeToTestCase(Long suiteId, Long testCaseId, String attribute, String value)
+            throws Exception {
+        var testCase = testCaseRepository.findCaseByIdAndSuiteId(suiteId, testCaseId);
+        if (testCase.isEmpty()) {
+            throw new Exception();
+        }
+
+        var attributes = testCase.get().getVal();
+        attributes.put(attribute, value);
+        testCase.get().setVal(attributes);
+
+        testCaseRepository.save(testCase.get());
+
+    }
 }
