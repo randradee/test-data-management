@@ -12,7 +12,7 @@ import java.util.Set;
 @Repository
 public interface TestCaseRepository extends JpaRepository<TestCase, Long> {
 
-    @Query(nativeQuery = true, value = "SELECT id, name, test_suite_id FROM TB_TEST_CASE WHERE test_suite_id=:suiteId")
+    @Query(nativeQuery = true, value = "SELECT * FROM TB_TEST_CASE WHERE test_suite_id=:suiteId")
     Set<TestCase> findCasesBySuiteId(Long suiteId);
     @Modifying
     @Query(nativeQuery = true, value = "DELETE FROM TB_TEST_CASE WHERE id=:testCaseId AND test_suite_id=:suiteId")

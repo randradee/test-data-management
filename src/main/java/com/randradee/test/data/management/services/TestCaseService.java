@@ -1,8 +1,11 @@
 package com.randradee.test.data.management.services;
 
+import com.randradee.test.data.management.domain.attribute.AttributeRequestDTO;
+import com.randradee.test.data.management.domain.attribute.AttributeResponseDTO;
 import com.randradee.test.data.management.domain.testcase.TestCase;
 import com.randradee.test.data.management.domain.testcase.TestCaseRequestDTO;
-import com.randradee.test.data.management.domain.testcase.TestCaseResponseDTO;
+import com.randradee.test.data.management.domain.testcase.TestCaseWithAttributesResponseDTO;
+import com.randradee.test.data.management.repositories.AttributeRepository;
 import com.randradee.test.data.management.repositories.TestCaseRepository;
 import com.randradee.test.data.management.repositories.TestSuiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ public class TestCaseService {
     TestSuiteRepository testSuiteRepository;
     @Autowired
     TestCaseRepository testCaseRepository;
+    @Autowired
+    AttributeRepository attributeRepository;
 
     @Transactional
     public void createTestCase(TestCaseRequestDTO requestData) throws Exception {
@@ -27,15 +32,22 @@ public class TestCaseService {
     }
 
     @Transactional
-    public TestCaseResponseDTO getTestCaseById(Long suiteId, Long testCaseId) throws Exception {
+    public TestCaseWithAttributesResponseDTO getTestCaseWithAttributesById(Long suiteId, Long testCaseId)
+            throws Exception {
         var testCase = testCaseRepository.findCaseByIdAndSuiteId(suiteId, testCaseId);
         if (testCase.isEmpty()) {
             throw new Exception();
         }
-        return new TestCaseResponseDTO(
+        var attributes = attributeRepository.findAll();
+
+        return new TestCaseWithAttributesResponseDTO(
+                testCase.get().getTestSuite().getId(),
                 testCase.get().getId(),
                 testCase.get().getName(),
-                testCase.get().getTestSuite().getId()
+                attributes
+                        .stream()
+                        .map(x -> new AttributeResponseDTO(x.getAttribute(), x.getVal()))
+                        .toList()
         );
     }
 
@@ -48,19 +60,4 @@ public class TestCaseService {
         testCaseRepository.deleteByIdAndSuiteId(suiteId, testCaseId);
     }
 
-    @Transactional
-    public void saveAttributeToTestCase(Long suiteId, Long testCaseId, String attribute, String value)
-            throws Exception {
-        var testCase = testCaseRepository.findCaseByIdAndSuiteId(suiteId, testCaseId);
-        if (testCase.isEmpty()) {
-            throw new Exception();
-        }
-
-        var attributes = testCase.get().getVal();
-        attributes.put(attribute, value);
-        testCase.get().setVal(attributes);
-
-        testCaseRepository.save(testCase.get());
-
-    }
 }

@@ -4,9 +4,10 @@ import com.randradee.test.data.management.domain.attribute.AttributeResponseDTO;
 
 import java.util.List;
 
-public record TestCaseResponseDTO(
-        Long id,
+public record TestCaseWithAttributesResponseDTO(
+        Long suiteId,
+        Long testCaseId,
         String name,
-        Long suiteId
+        List<AttributeResponseDTO> attributeList
 ) {
 }
